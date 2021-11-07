@@ -3,13 +3,15 @@ import { Alert, SafeAreaView, View, Text, ScrollView, TouchableOpacity, TextInpu
 import { loginStyle } from './login.style';
 import { Input, SocialIcon } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {NavigationContainer} from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 
-const LoginScreen =() => {
+const LoginScreen =({navigation}) => {
     //navigation
-    const { navigate } = this.props.navigation;
-    const login = () => navigate("Home");
+    //const { navigate } = this.props.navigation;
+    const login = () => props.navigation.navigate("Home");
+
+    const handleLogin = ()=> {
+        login();
+    }
 
     return(
         <SafeAreaView style={loginStyle.safeAreaView}>
@@ -33,24 +35,9 @@ const LoginScreen =() => {
                     </View>
                     <View style={loginStyle.buttonPanel}>
                         <TouchableOpacity
-                        onPress={login}
+                            onPress={() => navigation.navigate('Home')}
                         style={loginStyle.loginButton}>
                             <Text style={loginStyle.loginButtonText}>Login</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <SocialIcon
-                                title='Login With Facebook'
-                                button
-                                type='facebook'
-                                style={loginStyle.facebookButton}/>
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <SocialIcon
-                                title='Login With Instagram'
-                                button
-                                light
-                                type='instagram'
-                                style={loginStyle.instagramButton}/>
                         </TouchableOpacity>
                     </View>
                 </View>

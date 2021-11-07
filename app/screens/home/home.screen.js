@@ -1,59 +1,62 @@
-import React, {Component, useState} from 'react';
-import { Alert, SafeAreaView, View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import React, {Component, useEffect, useState} from 'react';
+import { Alert, SafeAreaView, View, Text, ScrollView, TouchableOpacity, TextInput, FlatList } from 'react-native';
 import { homeStyle } from './home.style';
-import { Input, SocialIcon } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
-// import {NavigationContainer} from '@react-navigation/native';
-// import { createStackNavigator } from '@react-navigation/stack';
+import db from '../../../firebase';
 
-const HomeScreen =() => {
-    //navigation
-    const login = () => props.navigation.navigate("Home");
+const HomeScreen =({navigation}) => {
+    const [task, setTask] = useState([]);
 
-    return(
-        <SafeAreaView style={loginStyle.safeAreaView}>
-            <ScrollView>
-                <View style={loginStyle.loginPage}>
-                    <View style={loginStyle.logoPanel}>
-                        <Icon name="tasks" color="white" size={40}/>
-                    </View>
-                    <View style={loginStyle.loginPanel}>
-                        <TextInput
-                        placeholder="Email"
-                        placeholderTextColor="#696969"
-                        style={loginStyle.inputEmail}/>
-                    </View>
-                    <View style={loginStyle.loginPanel}>
-                        <TextInput
-                        placeholder="Password"
-                        placeholderTextColor="#696969"
-                        style={loginStyle.inputEmail}
-                        secureTextEntry={true}/>
-                    </View>
-                    <View style={loginStyle.buttonPanel}>
-                        <TouchableOpacity
-                        onPress={() => {}}
-                        style={loginStyle.loginButton}>
-                            <Text style={loginStyle.loginButtonText}>Login</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <SocialIcon
-                                title='Login With Facebook'
-                                button
-                                type='facebook'
-                                style={loginStyle.facebookButton}/>
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <SocialIcon
-                                title='Login With Instagram'
-                                button
-                                light
-                                type='instagram'
-                                style={loginStyle.instagramButton}/>
-                        </TouchableOpacity>
+    function deleteTask(id){
+        db.collection("Tasks").doc(id).delete;
+    }
+
+    useEffect(() => {
+        db.collection("Tasks").onSnapshot((query) => {
+            const list = []
+            query.forEach((doc) => {
+                list.push({...doc.data(), id: doc.id})
+            })
+            setTask(list)
+        })
+    }, [])
+//PRECISO ARRUMAR A FLATLIST PARA NÃO FICAR BUGADA COM O SCROLLVIEW
+    const ItemView = ({item}) => {
+        return(
+            <TouchableOpacity
+            onPress={() => {navigation.navigate("EditTask", {
+                content: item.content,
+                title: item.title
+            })}}>
+                <View style={homeStyle.pageBody}>
+                    <View style={homeStyle.cardPreview}>
+                        <Text style={homeStyle.cardPreviewTitle}>{item.title}</Text>
+                        <Text style={homeStyle.cardPreviewText}>{item.content}</Text>
+                        <Text style={homeStyle.dateText}>November, 5, 2021</Text>
                     </View>
                 </View>
-            </ScrollView>
+            </TouchableOpacity>
+        )
+    }
+    return(
+        <SafeAreaView style={homeStyle.safeAreaView}>
+            <View style={homeStyle.header}>
+                <View style={homeStyle.headerTitleView}>
+                    <Text style={homeStyle.headerTitleText}>Notes</Text>
+                </View>
+            </View>
+            <View>
+                <FlatList
+                    showsVerticalScrollIndicator={false}
+                    data={task}
+                    renderItem={ItemView}/>
+                    
+            </View>
+            <TouchableOpacity
+                style={homeStyle.fab}
+                onPress={() => navigation.navigate('NewTask')}>
+                <Icon name="plus" color="white" size={20}/>
+            </TouchableOpacity>
         </SafeAreaView>
     );
 }

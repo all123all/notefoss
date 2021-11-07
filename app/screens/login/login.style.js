@@ -48,11 +48,6 @@ export const loginStyle = StyleSheet.create({
     },
     facebookButton: {
     },
-    // fab: {                                
-    //     position: 'absolute',                                          
-    //     bottom: 10,                                                    
-    //     right: 10, 
-    // },
 })
 
 //#1f1d2b BG
